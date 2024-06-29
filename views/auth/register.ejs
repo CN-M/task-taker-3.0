@@ -1,0 +1,65 @@
+  <div class="flex flex-col p-10 items-center space-y-5">
+    <h2 class="text-2xl font-sans font-semibold">
+      Don't have an account?
+    </h2>
+    <h2 class="text-2xl font-sans font-semibold">
+      Sign up to make the best of Task Taker
+    </h2>
+    <div class="flex flex-col items-center">
+      <form hx-post="/account/register" class="flex flex-col space-y-3">
+        <div class="flex gap-3 justify-between">
+          <input
+            class="border p-2 border-emerald-500 rounded-md focus:border-blue-500"
+            type="text"
+            name="firstName"
+            placeholder="Jack"
+            required
+          />
+          <input
+            class="border p-2 border-emerald-500 rounded-md focus:border-blue-500"
+            type="text"
+            name="lastName"
+            placeholder="Sparrow"
+            required
+          />
+        </div>
+        <input
+          class="border p-2 border-emerald-500 rounded-md focus:border-blue-500"
+          type="email"
+          name="email"
+          placeholder="hulk@hogan.com"
+          autoComplete="email"
+          required
+        />
+        <input
+          class="border p-2 border-emerald-500 rounded-md focus:border-blue-500"
+          type="password"
+          name="password"
+          placeholder="password"
+          autoComplete="current-password"
+          required
+        />
+        <button
+          class="p-3 rounded-md bg-emerald-600 text-white"
+          type="submit"
+        >
+          Sign Up
+        </button>
+
+          <% if (isError) { %>
+            <p class="text-red-500 text-sm">
+              <%= errorMessage %>
+          </p>
+          <% } %>
+        <p class="text-sm">
+          Already have an account?
+          <a
+          href="/login"
+            class="text-blue-500 cursor-pointer"
+          >
+            Login here
+          </a>
+        </p>
+      </form>
+    </div>
+  </div>
