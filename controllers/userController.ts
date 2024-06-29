@@ -54,6 +54,11 @@ export const registerUser = async (req: Request, res: Response) => {
         email,
       });
 
+      const authedUser = {
+        firstName,
+        lastName,
+      };
+
       res
         .cookie("accessToken", accessToken, {
           httpOnly: true,
@@ -68,9 +73,21 @@ export const registerUser = async (req: Request, res: Response) => {
           maxAge: 15 * 24 * 60 * 60 * 1000, // 15 Days
         });
 
-      return res.status(201).json(newUser);
-      // return res.status(201).redirect("/");
-      // return res.redirect("/");
+      const tasks = await prisma.task.findMany({
+        where: { authorId: id },
+        orderBy: { createdAt: "asc" },
+      });
+
+      res.status(200).render("partials/display", {
+        title: "Tasks",
+        // body: "../partials/display",
+        user: authedUser,
+        isAuthenticated: true,
+        isLoading: false,
+        tasks: tasks,
+        isError: false,
+        errorMessage: "",
+      });
     } else {
       return res.status(400).json({ error: "Invalid user data" });
     }
@@ -117,6 +134,11 @@ export const loginUser = async (req: Request, res: Response) => {
       email,
     });
 
+    const authedUser = {
+      firstName,
+      lastName,
+    };
+
     res
       .cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -131,8 +153,21 @@ export const loginUser = async (req: Request, res: Response) => {
         maxAge: 15 * 24 * 60 * 60 * 1000, // 15 Days
       });
 
-    return res.status(201).json(user);
-    // return res.redirect("/");
+    const tasks = await prisma.task.findMany({
+      where: { authorId: id },
+      orderBy: { createdAt: "asc" },
+    });
+
+    res.status(200).render("partials/display", {
+      title: "Tasks",
+      // body: "../partials/display",
+      user: authedUser,
+      isAuthenticated: true,
+      isLoading: false,
+      tasks: tasks,
+      isError: false,
+      errorMessage: "",
+    });
   } catch (err) {
     console.error("Error logging in user:", err);
     return res.status(500).json({ error: "Internal server error" });
@@ -141,11 +176,17 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const logoutUser = async (req: Request, res: Response) => {
   try {
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
-    return res.status(200).json({ message: "User successfully logged out" });
-    // return res.redirect("/login");
-    // return res.status(200).json({ message: "User successfully logged out" });
+    res
+      .clearCookie("accessToken")
+      .clearCookie("refreshToken")
+      .render("auth/login", {
+        title: "Login",
+        // body: "../auth/login",
+        user: req.user ? req.user : null,
+        isAuthenticated: req.user ? true : false,
+        isError: false,
+        errorMessage: "",
+      });
   } catch (err) {
     console.error("Error logging out user:", err);
     return res.status(500).json({ error: "Internal server error" });

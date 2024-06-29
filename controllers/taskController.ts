@@ -13,12 +13,12 @@ export const getTasks = async (req: Request, res: Response) => {
   try {
     const tasks = await prisma.task.findMany({
       where: { authorId: id },
+      orderBy: { createdAt: "asc" },
     });
 
-    // res.status(200).json(tasks);
     res.status(200).render("layouts/main", {
       title: "Tasks",
-      body: "../tasks/tasks",
+      body: "../partials/display",
       user: req.user,
       isAuthenticated: true,
       isLoading: false,
@@ -33,8 +33,6 @@ export const getTasks = async (req: Request, res: Response) => {
 };
 
 export const createTask = async (req: Request, res: Response) => {
-  const { task } = req.body;
-
   if (!req.user) {
     return res
       .status(400)
@@ -42,16 +40,31 @@ export const createTask = async (req: Request, res: Response) => {
   }
 
   const { id: userId } = req.user;
+  const { task } = req.body;
 
   try {
-    const newTask = await prisma.task.create({
+    await prisma.task.create({
       data: {
         task,
         author: { connect: { id: userId } },
       },
     });
 
-    res.status(200).json(newTask);
+    const tasks = await prisma.task.findMany({
+      where: { authorId: userId },
+      orderBy: { createdAt: "asc" },
+    });
+
+    res.status(200).render("partials/tasksDisplay", {
+      title: "Tasks",
+      // body: "../partials/tasks",
+      user: req.user,
+      isAuthenticated: true,
+      isLoading: false,
+      tasks: tasks,
+      isError: false,
+      errorMessage: "",
+    });
   } catch (err) {
     console.error("Error creating task:", err);
     res.status(500).json({ error: "Internal server error." });
@@ -59,8 +72,6 @@ export const createTask = async (req: Request, res: Response) => {
 };
 
 export const updateTask = async (req: Request, res: Response) => {
-  const { id: taskId } = req.params;
-
   if (!req.user) {
     return res
       .status(400)
@@ -68,6 +79,7 @@ export const updateTask = async (req: Request, res: Response) => {
   }
 
   const { id: userId } = req.user;
+  const { id: taskId } = req.params;
 
   try {
     const task = await prisma.task.findFirst({
@@ -78,14 +90,28 @@ export const updateTask = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Task not found" });
     }
 
-    const updatedTask = await prisma.task.update({
+    await prisma.task.update({
       where: { id: Number(taskId) },
       data: {
         completed: !task?.completed,
       },
     });
 
-    res.status(200).json(updatedTask);
+    const tasks = await prisma.task.findMany({
+      where: { authorId: userId },
+      orderBy: { createdAt: "asc" },
+    });
+
+    res.status(200).render("partials/tasksDisplay", {
+      title: "Tasks",
+      // body: "../partials/tasks",
+      user: req.user,
+      isAuthenticated: true,
+      isLoading: false,
+      tasks: tasks,
+      isError: false,
+      errorMessage: "",
+    });
   } catch (err) {
     console.error("Error updating task:", err);
     res.status(500).json({ error: "Internal server error." });
@@ -93,8 +119,6 @@ export const updateTask = async (req: Request, res: Response) => {
 };
 
 export const deleteTask = async (req: Request, res: Response) => {
-  const { id: taskId } = req.params;
-
   if (!req.user) {
     return res
       .status(400)
@@ -102,6 +126,7 @@ export const deleteTask = async (req: Request, res: Response) => {
   }
 
   const { id: userId } = req.user;
+  const { id: taskId } = req.params;
 
   try {
     const task = await prisma.task.findFirst({
@@ -112,12 +137,25 @@ export const deleteTask = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Task not found" });
     }
 
-    const deletedTask = await prisma.task.delete({
+    await prisma.task.delete({
       where: { id: Number(taskId), authorId: userId },
     });
 
-    // res.status(200).json({ message: "Task deleted", task: deletedTask });
-    res.status(200);
+    const tasks = await prisma.task.findMany({
+      where: { authorId: userId },
+      orderBy: { createdAt: "asc" },
+    });
+
+    res.status(200).render("partials/tasksDisplay", {
+      title: "Tasks",
+      // body: "../partials/tasks",
+      user: req.user,
+      isAuthenticated: true,
+      isLoading: false,
+      tasks: tasks,
+      isError: false,
+      errorMessage: "",
+    });
   } catch (err) {
     console.error("Error deleting task:", err);
     res.status(500).json({ error: "Internal server error." });

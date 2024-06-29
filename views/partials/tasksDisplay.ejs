@@ -1,0 +1,28 @@
+<div id="main" class="flex flex-col justify-center items-center space-y-3">
+    <% if (!tasks || tasks.length < 1) { %>
+      <h3>You have no tasks to display</h3>
+    <% } else { %>
+      <% tasks.forEach(task => { %>
+        <div
+          hx-put="/<%= task.id %>"
+          hx-trigger="dblclick"
+          hx-target="#main"
+          hx-swap="innerHTML"
+          class="w-full border rounded-md p-3 border-emerald-300"
+        >
+          <div class="flex justify-around items-center py-2 px-10 gap-3 hover:cursor-pointer">
+            <p class="text-2xl <%= task.completed ? 'line-through' : '' %>">
+              <%= task.task%>
+            </p>
+            <button
+            hx-delete="/<%= task.id %>"
+            hx-target="#main"
+              class="rounded-md px-4 py-3 bg-red-500 text-sm text-white tracking-widest border-none hover:bg-red-400 "
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      <% }); %>
+  <% } %>
+</div>

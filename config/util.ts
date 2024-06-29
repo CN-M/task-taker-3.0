@@ -1,13 +1,20 @@
+import { clsx, type ClassValue } from "clsx";
 import jwt from "jsonwebtoken";
-require("dotenv").config();
+import { twMerge } from "tailwind-merge";
 
 const { SECRET, REFRESH_SECRET } = process.env;
+
+require("dotenv").config();
 
 type User = {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
+};
+
+export const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
 };
 
 export const generateAccessToken = (user: User) => {

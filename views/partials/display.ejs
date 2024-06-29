@@ -1,0 +1,12 @@
+<div class="flex flex-col h-full items-center">
+    <% if (user && isAuthenticated) { %>
+      <div class="flex flex-col items-center justify-center p-5">
+        <h2 class="text-xl p-2 font-semibold">
+          Hey, <%= user.firstName %>! Here are your tasks:
+        </h2>
+        <p>Hint: Double click on a task to mark it complete.</p>
+      </div>
+    <% } %>
+    <%- include('../partials/tasksDisplay') %>
+    <%- include('../partials/addTask') %>
+  </div>

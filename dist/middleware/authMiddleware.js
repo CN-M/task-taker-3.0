@@ -39,7 +39,6 @@ const util_1 = require("../config/util");
 require("dotenv").config();
 const { SECRET, REFRESH_SECRET } = process.env;
 const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Starting Middleware");
     let accessToken = req.cookies["accessToken"]
         ? req.cookies["accessToken"]
         : null;
@@ -47,10 +46,9 @@ const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         ? req.cookies["refreshToken"]
         : null;
     if (!accessToken || !refreshToken) {
-        return res.status(401).json({ error: "Not authorized, no tokens" });
+        return res.redirect("/login");
+        // return res.status(401).json({ error: "Not authorized, no tokens" });
     }
-    console.log(accessToken);
-    console.log(refreshToken);
     try {
         const { id } = jsonwebtoken_1.default.verify(accessToken, SECRET);
         const user = yield db_1.prisma.user.findFirst({
@@ -66,7 +64,6 @@ const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         if (!user) {
             return res.status(400).json({ error: "User not found" });
         }
-        console.log(user);
         req.user = user;
         next();
     }

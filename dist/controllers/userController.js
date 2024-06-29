@@ -55,6 +55,10 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 lastName,
                 email,
             });
+            const authedUser = {
+                firstName,
+                lastName,
+            };
             res
                 .cookie("accessToken", accessToken, {
                 httpOnly: true,
@@ -68,7 +72,20 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 sameSite: "lax",
                 maxAge: 15 * 24 * 60 * 60 * 1000, // 15 Days
             });
-            return res.status(201).json(newUser);
+            const tasks = yield db_1.prisma.task.findMany({
+                where: { authorId: id },
+                orderBy: { createdAt: "asc" },
+            });
+            res.status(200).render("partials/display", {
+                title: "Tasks",
+                // body: "../partials/display",
+                user: authedUser,
+                isAuthenticated: true,
+                isLoading: false,
+                tasks: tasks,
+                isError: false,
+                errorMessage: "",
+            });
         }
         else {
             return res.status(400).json({ error: "Invalid user data" });
@@ -109,6 +126,10 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             lastName,
             email,
         });
+        const authedUser = {
+            firstName,
+            lastName,
+        };
         res
             .cookie("accessToken", accessToken, {
             httpOnly: true,
@@ -122,7 +143,20 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             sameSite: "lax",
             maxAge: 15 * 24 * 60 * 60 * 1000, // 15 Days
         });
-        return res.status(201).json(user);
+        const tasks = yield db_1.prisma.task.findMany({
+            where: { authorId: id },
+            orderBy: { createdAt: "asc" },
+        });
+        res.status(200).render("partials/display", {
+            title: "Tasks",
+            // body: "../partials/display",
+            user: authedUser,
+            isAuthenticated: true,
+            isLoading: false,
+            tasks: tasks,
+            isError: false,
+            errorMessage: "",
+        });
     }
     catch (err) {
         console.error("Error logging in user:", err);
@@ -132,9 +166,17 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.loginUser = loginUser;
 const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.clearCookie("accessToken");
-        res.clearCookie("refreshToken");
-        return res.status(200).json({ message: "User successfully logged out" });
+        res
+            .clearCookie("accessToken")
+            .clearCookie("refreshToken")
+            .render("auth/login", {
+            title: "Login",
+            // body: "../auth/login",
+            user: req.user ? req.user : null,
+            isAuthenticated: req.user ? true : false,
+            isError: false,
+            errorMessage: "",
+        });
     }
     catch (err) {
         console.error("Error logging out user:", err);

@@ -21,15 +21,15 @@ const getTasks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const tasks = yield db_1.prisma.task.findMany({
             where: { authorId: id },
+            orderBy: { createdAt: "asc" },
         });
-        // res.status(200).json(tasks);
         res.status(200).render("layouts/main", {
             title: "Tasks",
-            body: "../tasks/tasks",
+            body: "../partials/display",
             user: req.user,
             isAuthenticated: true,
             isLoading: false,
-            // tasks: tasks,
+            tasks: tasks,
             isError: false,
             errorMessage: "",
         });
@@ -41,21 +41,34 @@ const getTasks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.getTasks = getTasks;
 const createTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { task } = req.body;
     if (!req.user) {
         return res
             .status(400)
             .json({ error: "Not authoriized, please login or register" });
     }
     const { id: userId } = req.user;
+    const { task } = req.body;
     try {
-        const newTask = yield db_1.prisma.task.create({
+        yield db_1.prisma.task.create({
             data: {
                 task,
                 author: { connect: { id: userId } },
             },
         });
-        res.status(200).json(newTask);
+        const tasks = yield db_1.prisma.task.findMany({
+            where: { authorId: userId },
+            orderBy: { createdAt: "asc" },
+        });
+        res.status(200).render("partials/tasksDisplay", {
+            title: "Tasks",
+            // body: "../partials/tasks",
+            user: req.user,
+            isAuthenticated: true,
+            isLoading: false,
+            tasks: tasks,
+            isError: false,
+            errorMessage: "",
+        });
     }
     catch (err) {
         console.error("Error creating task:", err);
@@ -64,13 +77,13 @@ const createTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.createTask = createTask;
 const updateTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id: taskId } = req.params;
     if (!req.user) {
         return res
             .status(400)
             .json({ error: "Not authoriized, please login or register" });
     }
     const { id: userId } = req.user;
+    const { id: taskId } = req.params;
     try {
         const task = yield db_1.prisma.task.findFirst({
             where: { id: Number(taskId), authorId: userId },
@@ -78,13 +91,26 @@ const updateTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!task) {
             return res.status(404).json({ error: "Task not found" });
         }
-        const updatedTask = yield db_1.prisma.task.update({
+        yield db_1.prisma.task.update({
             where: { id: Number(taskId) },
             data: {
                 completed: !(task === null || task === void 0 ? void 0 : task.completed),
             },
         });
-        res.status(200).json(updatedTask);
+        const tasks = yield db_1.prisma.task.findMany({
+            where: { authorId: userId },
+            orderBy: { createdAt: "asc" },
+        });
+        res.status(200).render("partials/tasksDisplay", {
+            title: "Tasks",
+            // body: "../partials/tasks",
+            user: req.user,
+            isAuthenticated: true,
+            isLoading: false,
+            tasks: tasks,
+            isError: false,
+            errorMessage: "",
+        });
     }
     catch (err) {
         console.error("Error updating task:", err);
@@ -93,13 +119,13 @@ const updateTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.updateTask = updateTask;
 const deleteTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id: taskId } = req.params;
     if (!req.user) {
         return res
             .status(400)
             .json({ error: "Not authoriized, please login or register" });
     }
     const { id: userId } = req.user;
+    const { id: taskId } = req.params;
     try {
         const task = yield db_1.prisma.task.findFirst({
             where: { id: Number(taskId), authorId: userId },
@@ -107,10 +133,23 @@ const deleteTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!task) {
             return res.status(404).json({ error: "Task not found" });
         }
-        const deletedTask = yield db_1.prisma.task.delete({
+        yield db_1.prisma.task.delete({
             where: { id: Number(taskId), authorId: userId },
         });
-        res.status(200).json({ message: "Task deleted", task: deletedTask });
+        const tasks = yield db_1.prisma.task.findMany({
+            where: { authorId: userId },
+            orderBy: { createdAt: "asc" },
+        });
+        res.status(200).render("partials/tasksDisplay", {
+            title: "Tasks",
+            // body: "../partials/tasks",
+            user: req.user,
+            isAuthenticated: true,
+            isLoading: false,
+            tasks: tasks,
+            isError: false,
+            errorMessage: "",
+        });
     }
     catch (err) {
         console.error("Error deleting task:", err);
