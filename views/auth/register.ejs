@@ -1,4 +1,5 @@
-  <div class="flex flex-col p-10 items-center space-y-5">
+  <div 
+  class="flex flex-col p-10 items-center space-y-5">
     <h2 class="text-2xl font-sans font-semibold">
       Don't have an account?
     </h2>
@@ -6,7 +7,16 @@
       Sign up to make the best of Task Taker
     </h2>
     <div class="flex flex-col items-center">
-      <form hx-post="/account/register" hx-replace-url="/" hx-swap="innerHTML" hx-target="#container" class="flex flex-col space-y-3">
+      <form 
+        hx-post="/account/register" 
+        hx-replace-url="/" 
+        hx-swap="innerHTML" 
+        hx-target="#container" 
+        hx-indicator="#registerForm"
+        class="flex flex-col space-y-3"
+    id="registerForm"
+
+        >
         <div class="flex gap-3 justify-between">
           <input
             class="border p-2 border-emerald-500 rounded-md focus:border-blue-500"
@@ -40,10 +50,17 @@
           required
         />
         <button
-          class="p-3 rounded-md bg-emerald-600 text-white"
+          id="ogBtn"
+          class="p-3 rounded-md bg-emerald-600 text-white authSubmitButton"
           type="submit"
         >
           Sign Up
+        </button>
+        <button
+          class="p-3 rounded-md bg-emerald-600 text-white htmx-indicator"
+          disabled
+        >
+          Signing Up...
         </button>
 
           <% if (isError) { %>
@@ -63,3 +80,18 @@
       </form>
     </div>
   </div>
+
+
+<style>
+.htmx-request #ogBtn {
+ display: none;
+}
+
+.htmx-request .htmx-indicator {
+ display: inline;
+}
+
+.htmx-indicator {
+ display: none;
+}
+</style>

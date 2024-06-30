@@ -1,6 +1,4 @@
-import { clsx, type ClassValue } from "clsx";
 import jwt from "jsonwebtoken";
-import { twMerge } from "tailwind-merge";
 
 const { SECRET, REFRESH_SECRET } = process.env;
 
@@ -11,10 +9,6 @@ type User = {
   firstName: string;
   lastName: string;
   email: string;
-};
-
-export const cn = (...inputs: ClassValue[]) => {
-  return twMerge(clsx(inputs));
 };
 
 export const generateAccessToken = (user: User) => {

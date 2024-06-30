@@ -1,9 +1,17 @@
-<div class="flex flex-col items-center p-10 space-y-5">
+<div id="loginForm" class="flex flex-col items-center p-10 space-y-5">
     <h2 class="text-2xl font-sans font-semibold">
       Log in to make the best of Task Taker
     </h2>
     <div class="flex flex-col items-center">
-      <form hx-post="/account/login" hx-replace-url="/" hx-swap="innerHTML" hx-target="#container" class="flex flex-col space-y-3">
+      <form 
+          hx-post="/account/login" 
+          hx-replace-url="/" 
+          hx-swap="innerHTML" 
+          hx-target="#container" 
+          class="flex flex-col space-y-3"
+          hx-indicator="#loginForm"
+          id="loginForm"
+        >
         <input
           class="border p-2 border-emerald-500 rounded-md focus:border-blue-500"
           type="email"
@@ -21,10 +29,17 @@
           required
         />
         <button
-          class="p-3 rounded-md bg-emerald-600 text-white"
+          class="p-3 rounded-md bg-emerald-600 text-white authSubmitButton"
+          id="ogBtn"
           type="submit"
         >
           Log In
+        </button>
+        <button
+          class="p-3 rounded-md bg-emerald-600 text-white htmx-indicator"
+          disabled
+        >
+          Logging In...
         </button>
         <% if (isError)  { %>
           <p class="text-red-500 text-sm"><%=errorMessage %></p>
@@ -32,6 +47,7 @@
         <p class="text-sm">
           Don't have an account?
           <a
+          
           href="/register"
             class="text-blue-500 cursor-pointer"
           >
@@ -41,3 +57,17 @@
       </form>
     </div>
   </div>
+
+  <style>
+       .htmx-request #ogBtn {
+    display: none;
+  }
+
+  .htmx-request .htmx-indicator {
+    display: inline;
+  }
+
+  .htmx-indicator {
+    display: none;
+  }
+  </style>

@@ -4,25 +4,62 @@
     <% } else { %>
       <% tasks.forEach(task => { %>
         <div
-          hx-put="/<%= task.id %>"
-          hx-trigger="dblclick"
-          hx-target="#main"
-          hx-swap="innerHTML"
-          class="w-full border rounded-md p-3 border-emerald-300"
+          class="w-full border rounded-md p-3 border-emerald-300 task"
         >
           <div class="flex justify-around items-center py-2 px-10 gap-3 hover:cursor-pointer">
-            <p class="text-2xl <%= task.completed ? 'line-through' : '' %>">
+            <p 
+            hx-put="/<%= task.id %>"
+            id="task-<%= task.id %>"
+            hx-trigger="dblclick"
+            hx-target="#main"
+            hx-swap="innerHTML"
+            class="text-2xl py-2 <%= task.completed ? 'line-through' : '' %>"
+            >
               <%= task.task%>
             </p>
-            <button
-            hx-delete="/<%= task.id %>"
-            hx-target="#main"
-              class="rounded-md px-4 py-3 bg-red-500 text-sm text-white tracking-widest border-none hover:bg-red-400 "
-            >
+            <div id="delete-btn-task-<%= task.id %>">
+              <button
+              hx-delete="/<%= task.id %>"
+              hx-target="#main"
+              hx-indicator="#delete-btn-task-<%= task.id %>"
+              id="deleteBtn"
+              class="rounded-md px-4 py-3 bg-red-500 text-sm text-white tracking-widest border-none hover:bg-red-400"
+              >
               Delete
             </button>
+            <button
+            class="rounded-md px-4 py-3 bg-red-500 text-sm text-white tracking-widest border-none hover:bg-red-400 htmx-indicator"
+            disabled
+            >
+            Deleting...
+          </button>
+        </div>
           </div>
         </div>
       <% }); %>
   <% } %>
 </div>
+
+<style>
+  .htmx-request #deleteBtn {
+    display: none;
+  }
+
+  .htmx-request .htmx-indicator {
+    display: inline;
+  }
+
+  .htmx-indicator {
+    display: none;
+  }
+
+  /* Additional styling for the loading spinner */
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>

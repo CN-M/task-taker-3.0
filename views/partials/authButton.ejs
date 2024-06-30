@@ -1,10 +1,28 @@
-<div class="flex bg-emerald-500 rounded-lg px-5 py-2">
+<div id="logout" >
     <% if (user && isAuthenticated) { %>
-      <button hx-post="/account/logout" hx-replace-url="/login" hx-target="#container" hx-swap="innerHTML"  >
+      <button 
+        hx-post="/account/logout" 
+        hx-replace-url="/login" 
+        hx-target="#container" 
+        hx-swap="innerHTML"  
+        hx-indicator="#logout"
+        id="ogBtn"
+        class="flex bg-emerald-500 rounded-lg px-5 py-2 logoutBtn"
+        >
         Logout
       </button>
+      <button 
+      class="flex bg-emerald-500 rounded-lg px-5 py-2 htmx-indicator"
+      disabled
+      >
+        Logging Out...
+      </button>
     <% } else { %>
-      <a href="/login">
+      <a
+        class="flex bg-emerald-500 rounded-lg px-5 py-2"
+        id="loginButton" 
+        href="/login"
+      >
         Login
       </a>
     <% } %>
@@ -13,3 +31,16 @@
     <% } %>
   </div>
 
+<style>
+   .htmx-request #ogBtn {
+    display: none;
+  }
+
+  .htmx-request .htmx-indicator {
+    display: inline;
+  }
+
+  .htmx-indicator {
+    display: none;
+  }
+</style>

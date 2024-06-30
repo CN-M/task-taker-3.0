@@ -1,8 +1,9 @@
-<div class="flex flex-col p-10 space-y-5">
+<div id="addTask" class="flex flex-col p-10 space-y-5">
   <form
     hx-post="/"
     hx-target="#main"
     hx-swap="innerHTML"
+    hx-indicator="#addTask"
     class="flex flex-col space-y-3"
   >
     <input
@@ -12,8 +13,26 @@
       placeholder="Take out the trash"
       required
     />
-    <button class="p-3 rounded-md bg-emerald-600 text-white" type="submit">
+    <button id="ogBtn" class="p-3 rounded-md bg-emerald-600 text-white" type="submit">
       Add Task
+    </button>
+    <button class="p-3 rounded-md bg-emerald-600 text-white htmx-indicator" disabled>
+      Adding Task...
+    </button>
     </button>
   </form>
 </div>
+
+<style>
+  .htmx-request #ogBtn {
+    display: none;
+  }
+
+  .htmx-request .htmx-indicator {
+    display: inline;
+  }
+
+  .htmx-indicator {
+    display: none;
+  }
+</style>
